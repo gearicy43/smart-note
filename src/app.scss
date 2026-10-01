@@ -1,3 +1,5 @@
+@use './styles/tokens' as *;
+
 page { background: #f7f5ef; color: #2d302e; font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; font-size: 28px; }
 view, text, input, button { box-sizing: border-box; }
 .app { max-width: 920px; margin: 0 auto; min-height: 100vh; padding-bottom: 60px; }
@@ -31,7 +33,7 @@ view, text, input, button { box-sizing: border-box; }
 .task { border: 1px solid #e6e2d9; border-left: 5px solid #ddd8cd; border-radius: 12px; background: #fff; padding: 16px; margin: 11px 0; }
 .task-deep { background: #fff5f3; }.task-light { background: #fff9f7; }.task-done { background: #f3faf4; }
 .task-head, .task-details { display: flex; align-items: center; gap: 13px; }
-.task-head { min-height: 42px; }.check { width: 34px; flex: none; font-size: 34px; color: #bb8424; line-height: 1; }.task-title { flex: 1; min-width: 0; font-size: 25px; font-weight: 600; }.task-title.done { text-decoration: line-through; color: #8c9a8c; }
+.task-head { min-height: 42px; }.check { display: flex; flex: none; align-items: center; justify-content: center; width: $touch-min; font-size: $text-title; color: $text-primary; line-height: 1; }.task-title { flex: 1; min-width: 0; font-size: $text-item; font-weight: $weight-semibold; }.task-title.done { text-decoration: line-through; color: $text-done; }
 .task-details { margin: 13px 0 0 44px; flex-wrap: wrap; }.task-details .field-name:not(:first-child) { margin-left: 10px; }
 .note { flex: 1; min-width: 120px; font-size: 22px; color: #596159; }
 .hint { font-size: 19px; color: #aba69a; }
@@ -42,7 +44,7 @@ view, text, input, button { box-sizing: border-box; }
 .setting { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 23px 0; border-bottom: 1px solid #e5e1d8; font-size: 21px; }.setting-label { width: 100%; font-weight: 600; font-size: 24px; }.setting-number { width: 70px; border: 1px solid #dcd8cf; border-radius: 8px; background: #fff; padding: 7px; text-align: center; }.swatch { width: 24px; height: 24px; border-radius: 50%; margin-left: auto; }.color-input { width: 120px; font-size: 21px; }.reset-button { margin-top: 28px; background: #fff; color: #68695f; font-size: 23px; border: 1px solid #e2ded5; }
 
 /* 清单式移动界面 */
-page { background: #fafafc; color: #191b1e; }
+page { background: $surface-page; color: $text-primary; }
 .app { max-width: 720px; min-height: 100vh; padding: 0 24px 165px; }
 .header { height: 72px; padding: 0; }
 .back-link { color: #777b82; font-size: 22px; }
@@ -51,11 +53,11 @@ page { background: #fafafc; color: #191b1e; }
 .screen-subtitle { color: #a1a4aa; font-size: 19px; }
 .project-list { min-height: 50vh; }
 .project-list-item { display: flex; align-items: flex-start; gap: 14px; padding: 20px 4px; border-bottom: 1px solid #eeeef0; }
-.project-list-check { color: #33363a; font-size: 30px; line-height: 1; }
+.project-list-check { display: flex; flex: none; align-items: center; justify-content: center; width: $touch-min; color: $text-primary; font-size: $text-title; line-height: 1; }
 .project-list-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px; }
-.project-list-title { overflow: hidden; font-size: 26px; text-overflow: ellipsis; white-space: nowrap; }
-.project-list-description { overflow: hidden; color: #82868d; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
-.project-list-meta { color: #92959b; font-size: 16px; }
+.project-list-title { overflow: hidden; color: $text-primary; font-size: $text-title; text-overflow: ellipsis; white-space: nowrap; }
+.project-list-description { overflow: hidden; color: $text-secondary; font-size: $text-meta; text-overflow: ellipsis; white-space: nowrap; }
+.project-list-meta { color: $text-tertiary; font-size: $text-caption; }
 .project-list-arrow { color: #b4b6bb; font-size: 28px; line-height: 1; }
 .create-project { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e9eaec; border-radius: 15px; background: #fff; font-size: 19px; }.create-project input { flex: 1; min-width: 0; font-size: 22px; }.create-project text:last-child { color: #999da3; }
 .page { padding: 0; }
@@ -99,42 +101,42 @@ page { background: #fafafc; color: #191b1e; }
 .calendar-project-tag { align-self: flex-start; display: block; max-width: 100%; overflow: hidden; padding: 4px 9px; border-radius: 7px; background: #f4f4f6; color: #777b82; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
 .calendar-project-tag.single { border: 1px solid #dce3ec; background: #f3f6fa; font-weight: 600; }
 .calendar-setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding-top: 18px; padding-bottom: 18px; }.calendar-setting .setting-label { width: auto; }
-.project-list-group { border-bottom: 1px solid #eeeef0; }.project-list-group .project-list-item { border: 0; }
+.project-list-group { border-bottom: $hairline solid $divider; }.project-list-group .project-list-item { border: 0; }
 .project-list-copy, .outline-main, .task-main, .outline-check, .project-list-check { cursor: pointer; }
-.project-list-arrow, .task-expand { flex: none; min-width: 28px; color: #9fa2a7; font-size: 28px; text-align: center; cursor: pointer; }
-.project-outline { margin: -4px 0 15px 42px; border-left: 1px solid #e9eaec; }
-.outline-row { display: flex; align-items: flex-start; gap: 11px; min-height: 54px; padding: 12px 0 11px 13px; border-bottom: 1px solid #f0f0f2; }
-.outline-check { color: #8b8f95; font-size: 25px; line-height: 1; }.outline-main { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px; font-size: 21px; }.outline-main > text:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.outline-meta, .task-meta { color: #969aa0; font-size: 17px; }.outline-meta:empty, .task-meta:empty { display: none; }
+.project-list-arrow, .task-expand { display: flex; flex: none; align-items: center; justify-content: center; min-width: $space-6; min-height: $space-6; color: $text-tertiary; font-size: $text-title; text-align: center; cursor: pointer; }
+.project-outline { margin: -4px 0 15px 42px; border-left: $hairline solid $divider; background: $surface-group; overflow: hidden; }
+.outline-row { display: flex; align-items: center; gap: 0; min-height: 54px; padding: $space-2 0 $space-2 $space-2; border-bottom: $hairline solid $divider-subtle; }
+.outline-check { display: flex; flex: none; align-items: center; justify-content: center; width: $touch-min; color: $text-primary; font-size: $text-title; line-height: 1; }.outline-main { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 2px; font-size: $text-item; }.outline-main > text:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.outline-meta, .task-meta { color: $text-secondary; font-size: $text-meta; }.outline-meta:empty, .task-meta:empty { display: none; }
 .task { padding: 11px 5px 11px 2px; }.task-head { align-items: flex-start; }.task-main { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px; }.task-title { display: block; white-space: normal; }
 .task-preview { overflow: hidden; color: #9a9da3; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
 .attributes { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; padding: 11px 0; border-top: 1px solid #f0f0f2; }
 .attribute-line { display: flex; align-items: center; gap: 6px; max-width: 100%; color: #858990; font-size: 17px; line-height: 1.5; white-space: pre-wrap; }.attribute-line .date-button { padding: 0; background: transparent; color: inherit; font-size: inherit; }.attribute-line .date-clear { font-size: 15px; }.attribute-tag { margin-right: 7px; }
 .attribute-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 5px; }.attribute-pill { display: flex; flex: none; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border: 1px solid #e5e6e8; border-radius: 18px; background: #fff; color: #848890; font-size: 16px; line-height: 1; white-space: nowrap; }.attribute-pill .date-field { display: flex; width: auto; gap: 0; }.attribute-pill .date-button { display: block; padding: 0; border: 0; background: transparent; color: inherit; font-size: inherit; line-height: 1; white-space: nowrap; }
-.attribute-edit { width: 100%; padding: 12px; border-radius: 12px; background: #f7f7f8; }.optional-input { display: block; width: 100%; min-height: 42px; padding: 9px 11px; border-radius: 10px; background: #fff; font-size: 19px; }.attribute-edit-actions { display: flex; justify-content: flex-end; gap: 18px; margin-top: 10px; color: #858990; font-size: 17px; }.attribute-edit-actions text:last-child { color: #262a30; font-weight: 600; }
+.attribute-edit { width: 100%; padding: $space-3; border-radius: $radius-sm; background: $surface-sunken; }.optional-input { display: block; width: 100%; min-height: 42px; padding: 9px 11px; border-radius: 10px; background: #fff; font-size: 19px; }.attribute-edit-actions { display: flex; justify-content: flex-end; gap: 18px; margin-top: 10px; color: #858990; font-size: 17px; }.attribute-edit-actions text:last-child { color: #262a30; font-weight: 600; }
 .color-editor { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-left: auto; }.color-current { display: flex; align-items: center; gap: 8px; color: #666a70; }.color-options { display: flex; order: 3; gap: 9px; flex-wrap: wrap; width: 100%; padding: 8px 0; }.color-option { width: 25px; height: 25px; border-radius: 50%; }.color-option.selected { outline: 2px solid #333; outline-offset: 3px; }
 .mini-icon { color: #8b75b7; font-size: 19px; line-height: 1; }
 .task-more { flex: none; padding: 0 4px; color: #a2a5ab; font-size: 24px; line-height: 1; letter-spacing: 1px; }
 .task-date-toggle { gap: 6px; color: #8b8f96; }.task-date-toggle .date-summary { flex: none; text-align: left; font-size: 17px; }
 .sheet-backdrop { position: fixed; z-index: 20; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: rgba(14,16,20,.48); }
-.task-sheet { position: relative; display: flex; flex-direction: column; width: min(720px, 100%); height: min(82vh, 900px); border-radius: 28px 28px 0 0; background: #fafafb; box-shadow: 0 -18px 45px rgba(0,0,0,.12); animation: sheet-in .22s ease-out; }
+.task-sheet { position: relative; display: flex; flex-direction: column; width: min(720px, 100%); height: min(82vh, 900px); border-radius: $radius-lg $radius-lg 0 0; background: $surface-sheet; box-shadow: 0 -18px 45px rgba(0,0,0,.12); animation: sheet-in .22s ease-out; }
 .sheet-grab { flex: none; display: flex; align-items: center; justify-content: center; padding: 10px 0 6px; }
 .sheet-grab .sheet-handle { margin: 0; }
-.sheet-handle { flex: none; align-self: center; width: 46px; height: 5px; margin: 10px 0 6px; border-radius: 5px; background: #c7c9ce; }.sheet-nav { flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 8px 25px 0; font-size: 21px; line-height: 1.4; }.sheet-nav-back { color: #777b82; }.sheet-nav-more { color: #6b7076; font-size: 24px; letter-spacing: 1px; line-height: 1; }.sheet-nav-title { color: #2d302e; text-align: center; font-weight: 600; }.sheet-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 22px; }.sheet-nav-done { color: #23262b; font-weight: 600; }
-.sheet-scroll { flex: 1; height: calc(82vh - 21px); padding: 30px 25px calc(35px + env(safe-area-inset-bottom)); box-sizing: border-box; }.sheet-title-row { display: flex; align-items: center; gap: 10px; }.sheet-title { flex: 1; min-width: 0; font-size: 29px; font-weight: 650; }.sheet-parent { display: block; margin: 8px 0 19px 44px; color: #92969d; font-size: 17px; }.sheet-section-title { margin: 28px 0 11px; color: #373b40; font-size: 20px; font-weight: 600; }.sheet-add { margin-top: 13px; }
+.sheet-handle { flex: none; align-self: center; width: 46px; height: 5px; margin: 10px 0 6px; border-radius: 5px; background: #c7c9ce; }.sheet-nav { flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 8px 25px 0; font-size: 21px; line-height: 1.4; }.sheet-nav-back { color: $text-secondary; }.sheet-nav-more { color: $text-secondary; font-size: $text-page; letter-spacing: 1px; line-height: 1; }.sheet-nav-title { color: $text-primary; text-align: center; font-weight: $weight-semibold; }.sheet-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 22px; }.sheet-nav-done { color: $text-primary; font-weight: $weight-semibold; }
+.sheet-scroll { flex: 1; height: calc(82vh - 21px); padding: 30px 25px calc(35px + env(safe-area-inset-bottom)); box-sizing: border-box; }.sheet-title-row { display: flex; align-items: center; gap: 10px; }.sheet-title { flex: 1; min-width: 0; font-size: $text-page; font-weight: $weight-semibold; }.sheet-parent { display: block; margin: 8px 0 19px 44px; color: #92969d; font-size: 17px; }.sheet-section-title { margin: 28px 0 11px; color: #373b40; font-size: 20px; font-weight: 600; }.sheet-add { margin-top: 13px; }
 @keyframes sheet-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 @media (max-width: 600px) {
   .app { padding: 0 40px 240px; }
   .header { height: 100px; }.back-link { font-size: 28px; }
   .screen-heading { margin: 22px 0 32px; }.brand { font-size: 50px; }.screen-subtitle { font-size: 25px; }
-  .project-list-item { gap: 20px; padding: 28px 4px; }.project-list-check { font-size: 42px; }.project-list-title { font-size: 34px; }.project-list-description { font-size: 23px; }.project-list-meta { font-size: 21px; }.project-list-arrow { font-size: 38px; }
+  .project-list-item { align-items: center; gap: $space-2; min-height: $touch-min; padding: $space-3 4px; }.project-list-check { font-size: $text-title; }.project-list-title { font-size: $text-title; }.project-list-description { font-size: $text-meta; }.project-list-meta { font-size: $text-caption; }.project-list-arrow { font-size: $text-title; }
   .create-project { gap: 18px; padding: 22px; border-radius: 22px; font-size: 26px; }.create-project input { font-size: 29px; }
-  .page-title { height: 70px; line-height: 70px; font-size: 38px; }.count, .description, .field-name, .date-clear, .hint { font-size: 25px; }
-  .root-check { font-size: 42px; }
+  .page-title { height: 70px; line-height: 70px; font-size: $text-page; }.count, .description, .field-name, .date-clear, .hint { font-size: 25px; }
+  .root-check { flex: none; font-size: $text-title; }
   .panel-row { min-height: 80px; padding: 18px 0; }.field-value, .date-button, .project-actions, .note { font-size: 27px; }.date-button { padding: 10px 14px; }.project-actions { padding: 22px 2px; }
   .date-toggle { min-height: 80px; font-size: 26px; }.task-date-toggle { min-height: 56px; margin-left: 54px; }
   .section-title { margin: 31px 0 18px; font-size: 27px; }.add-line { min-height: 68px; padding: 16px 18px; }.add-line input, .add-line text { font-size: 28px; }.add-line .add-icon { width: 42px; height: 42px; font-size: 38px; }
-  .task { padding: 19px 7px 16px 2px; }.task-head { min-height: 56px; }.check { width: 42px; font-size: 40px; }.task-title { font-size: 29px; }.task-details { margin-left: 54px; margin-top: 18px; }.task .add-line { margin-left: 54px; }.choice { font-size: 26px; }
+  .task { padding: $space-4 7px $space-4 2px; }.task-head { min-height: $space-6; }.check { font-size: $text-title; }.task-title { font-size: $text-item; }.task-details { margin-left: 54px; margin-top: 18px; }.task .add-line { margin-left: 54px; }.choice { font-size: 26px; }
   .settings-card { padding: 0 23px; }.setting { padding: 28px 0; font-size: 26px; }.setting-label { font-size: 30px; }.setting-number { width: 78px; }.swatch { width: 30px; height: 30px; }.color-input { width: 135px; font-size: 26px; }.reset-button { font-size: 28px; }
   .empty { font-size: 27px; }.floating-add { right: 36px; bottom: calc(150px + env(safe-area-inset-bottom)); width: 90px; height: 90px; font-size: 58px; }
   .bottom-nav { right: 36px; bottom: calc(22px + env(safe-area-inset-bottom)); left: 36px; height: 112px; padding: 8px; border-radius: 60px; }.nav-item { height: 96px; border-radius: 50px; font-size: 23px; }.nav-icon { font-size: 39px; }
@@ -143,27 +145,27 @@ page { background: #fafafc; color: #191b1e; }
   .calendar-agenda { margin-top: 30px; }.calendar-entry { gap: 18px; padding: 23px 2px; }.calendar-entry-check { font-size: 37px; }.calendar-entry-copy { font-size: 31px; }.calendar-entry-project { font-size: 25px; }
   .calendar-view-switch { padding: 5px; border-radius: 27px; }.calendar-view-switch text { padding: 9px 12px; border-radius: 23px; font-size: 23px; }
   .calendar-project-tag { padding: 6px 12px; border-radius: 10px; font-size: 23px; }
-  .project-outline { margin-left: 54px; }.outline-row { min-height: 72px; padding: 16px 0 15px 18px; }.outline-check { font-size: 34px; }.outline-main { font-size: 29px; }.outline-meta, .task-meta { font-size: 23px; }.task-expand { font-size: 37px; }
+  .project-outline { margin-left: $space-5; }.outline-row { min-height: $touch-min; padding: $space-2 0 $space-2 $space-2; }.outline-check { font-size: $text-title; }.outline-main { font-size: $text-item; }.outline-meta, .task-meta { font-size: $text-meta; }.task-expand { font-size: $text-title; }
   .task-main { gap: 6px; }.optional-input { min-height: 56px; padding: 12px 15px; font-size: 24px; }
   .color-editor { gap: 15px; font-size: 25px; }.color-option { width: 34px; height: 34px; }.color-options { gap: 15px; }
   .task-preview, .attribute-line, .attribute-pill, .attribute-edit-actions { font-size: 22px; }.attribute-pill { height: 44px; padding: 0 14px; border-radius: 24px; }.attribute-edit { padding: 16px; }.attribute-line .date-clear { font-size: 20px; }.mini-icon { font-size: 24px; }
 .task-date-toggle .date-summary { font-size: 22px; }.task-date-toggle { min-height: 45px; }
-  .task-sheet { height: 92vh; border-radius: 32px 32px 0 0; }.sheet-handle { width: 62px; height: 7px; margin-top: 14px; }.sheet-nav { padding: 12px 34px 0; font-size: 27px; }.sheet-nav-actions { gap: 28px; }.sheet-scroll { height: calc(92vh - 28px); padding: 42px 34px calc(48px + env(safe-area-inset-bottom)); }.sheet-title { font-size: 39px; }.sheet-parent { margin-left: 55px; font-size: 23px; }.sheet-section-title { font-size: 27px; }
+  .task-sheet { height: 92vh; border-radius: 32px 32px 0 0; }.sheet-handle { width: 62px; height: 7px; margin-top: 14px; }.sheet-nav { padding: 12px 34px 0; font-size: 27px; }.sheet-nav-actions { gap: 28px; }.sheet-scroll { height: calc(92vh - 28px); padding: 42px 34px calc(48px + env(safe-area-inset-bottom)); }.sheet-title { font-size: $text-page; }.sheet-parent { margin-left: 55px; font-size: 23px; }.sheet-section-title { font-size: 27px; }
 }
 
 /* Shared mobile item and setting rows. */
-.item-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) 30px; align-items: start; column-gap: 12px; min-height: 58px; padding: 12px 2px; border-bottom: 1px solid #eeeef0; }
-.item-check { color: #34383d; font-size: 29px; line-height: 1.1; text-align: center; }
-.item-check.done { color: #479266; }
+.item-row { display: grid; grid-template-columns: $space-6 minmax(0, 1fr) $space-6; align-items: center; column-gap: 0; min-height: 58px; padding: $space-2 2px; border-bottom: $hairline solid $divider; }
+.item-check { display: flex; align-items: center; justify-content: center; color: $text-primary; font-size: $text-title; line-height: 1; text-align: center; }
+.item-check.done { color: $accent-done; }
 .item-content { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
-.item-title { overflow: hidden; color: #23262b; font-size: 22px; font-weight: 500; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-.item-title.done { color: #91959b; text-decoration: line-through; }
-.item-description { overflow: hidden; color: #81868d; font-size: 18px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-.item-metadata { color: #969aa0; font-size: 16px; line-height: 1.4; }
-.item-accessory { align-self: center; color: #b5b8bd; font-size: 27px; text-align: center; }
+.item-title { overflow: hidden; color: $text-primary; font-size: $text-item; font-weight: $weight-regular; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.item-title.done { color: $text-done; text-decoration: line-through; }
+.item-description { overflow: hidden; color: $text-secondary; font-size: $text-meta; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.item-metadata { color: $text-secondary; font-size: $text-caption; line-height: 1.4; }
+.item-accessory { display: flex; align-items: center; justify-content: center; color: $text-tertiary; font-size: $text-title; text-align: center; }
 .task { padding: 0; border: 0; background: transparent; }
-.task .item-row { border-bottom: 1px solid #eeeef0; }
-.calendar-agenda .item-row { border-bottom: 1px solid #eeeef0; }
+.task .item-row { border-bottom: $hairline solid $divider; }
+.calendar-agenda .item-row { border-bottom: $hairline solid $divider; }
 .calendar-agenda-head .section-title { font-size: 20px; font-weight: 600; }
 .calendar-item.tone-deep .item-metadata { color: #963b3d; }
 .calendar-item.tone-light .item-metadata { color: #bd7774; }
@@ -190,8 +192,8 @@ page { background: #fafafc; color: #191b1e; }
 .data-row .setting-label { width: auto; }
 .setting-help { color: #969aa0; font-size: 16px; }
 @media (max-width: 600px) {
-  .item-row { grid-template-columns: 42px minmax(0, 1fr) 38px; column-gap: 13px; min-height: 76px; padding: 17px 2px; }
-  .item-check { font-size: 38px; }.item-title { font-size: 29px; }.item-description { font-size: 23px; }.item-metadata { font-size: 21px; }.item-accessory { font-size: 36px; }
+  .item-row { grid-template-columns: $space-6 minmax(0, 1fr) $space-6; column-gap: 0; min-height: $touch-min; padding: $space-2 2px; }
+  .item-check { font-size: $text-title; }.item-title { font-size: $text-item; }.item-description { font-size: $text-meta; }.item-metadata { font-size: $text-caption; }.item-accessory { font-size: $text-title; }
   .calendar-agenda-head .section-title { font-size: 25px; }
   .setting-row { grid-template-columns: minmax(0, 1fr) 115px 58px; min-height: 82px; }
   .setting-row .setting-label, .calendar-setting .setting-label { font-size: 28px; }.setting-value { font-size: 25px; }
@@ -202,16 +204,16 @@ page { background: #fafafc; color: #191b1e; }
 
 /* Completion states: finished items stay in place, just with lower visual weight.
    项目 / 事项 / 子项共用同一套规则，只看算出来的 completed，不区分节点类型。 */
-.item-content.done .item-description { color: #b0b4b9; }
-.item-content.done .item-metadata { color: #b3b7bc; }
-.outline-main.done .outline-title { color: #9aa0a6; text-decoration: line-through; }
-.outline-main.done .outline-meta { color: #b3b7bc; }
-.project-list-copy.done .project-list-title { color: #9aa0a6; text-decoration: line-through; }
-.project-list-copy.done .project-list-description { color: #b0b4b9; }
-.page-title.done { color: #9aa0a6; text-decoration: line-through; }
-.sheet-title.done { color: #9aa0a6; text-decoration: line-through; }
-.outline-check.done, .project-list-check.done { color: #479266; }
-.check.done, .root-check.done { color: #479266; }
+.item-content.done .item-description { color: $text-tertiary; }
+.item-content.done .item-metadata { color: $text-tertiary; }
+.outline-main.done .outline-title { color: $text-done; text-decoration: line-through; }
+.outline-main.done .outline-meta { color: $text-tertiary; }
+.project-list-copy.done .project-list-title { color: $text-done; text-decoration: line-through; }
+.project-list-copy.done .project-list-description { color: $text-tertiary; }
+.page-title.done { color: $text-done; text-decoration: line-through; }
+.sheet-title.done { color: $text-done; text-decoration: line-through; }
+.outline-check.done, .project-list-check.done { color: $accent-done; }
+.check.done, .root-check.done { color: $accent-done; }
 .project-filter { position: relative; }
 .project-filter-trigger { display: inline-flex; align-items: center; gap: 7px; padding: 4px 0; color: #4b5057; font-size: 21px; }
 .project-filter-count { color: #b3b6bb; font-size: 17px; }
@@ -234,14 +236,14 @@ page { background: #fafafc; color: #191b1e; }
 .swipe-actions { position: absolute; top: 0; right: 0; bottom: 0; display: flex; }
 .swipe-action { display: flex; align-items: center; justify-content: center; min-width: 76px; padding: 0 24px; background: #c3c6cb; color: #fff; font-size: 20px; white-space: nowrap; }
 .swipe-action-danger { background: #c0605f; color: #fff; }
-.swipe-content { position: relative; background: #fafafc; touch-action: pan-y; transition: transform .18s ease-out; }
+.swipe-content { position: relative; background: $surface-page; touch-action: pan-y; transition: transform .18s ease-out; }
 .swipe-content.dragging { transition: none; }
 /* 详情抽屉里的事项 / 子项也有左滑，用抽屉底色盖住按钮（.task 本身是透明的）。 */
-.task .swipe-content { background: #fafafb; }
+.task .swipe-content { background: $surface-sheet; }
 
 /* 垃圾桶里的项目：弱化，但不加删除线（删除 ≠ 完成）。 */
-.trashed-row .item-title { color: #9aa0a6; }
-.trashed-row .item-check { color: #b7babe; }
+.trashed-row .item-title { color: $text-done; }
+.trashed-row .item-check { color: $text-tertiary; }
 
 /* 窄屏下把 ··· 菜单 / 左滑操作 / 项目筛选放大到可点按的尺寸（必须放在基础规则之后）。 */
 @media (max-width: 600px) {
@@ -251,4 +253,14 @@ page { background: #fafafc; color: #191b1e; }
   .action-title { padding: 18px 2px 14px; font-size: 24px; }.action-row { min-height: 84px; font-size: 30px; }
   .swipe-action { min-width: 96px; padding: 0 30px; font-size: 26px; }
   .project-filter-menu { min-width: 260px; padding: 8px; border-radius: 18px; }.project-filter-option { min-height: 66px; padding: 0 16px; font-size: 26px; }
+}
+
+/* 展开区域是全项目唯一的层级底色。放在最后，盖住上面的行底色。 */
+.project-outline .swipe-content, .children .swipe-content { background: $surface-group; }
+.children { background: $surface-group; overflow: hidden; }
+
+/* 圆形完成按钮：项目 / 事项 / 子项尺寸完全一致，纵向命中区域 44pt。 */
+.check, .root-check, .outline-check, .project-list-check, .item-check {
+  display: flex; flex: none; align-items: center; justify-content: center;
+  width: $space-6; min-height: $touch-min; line-height: 1;
 }

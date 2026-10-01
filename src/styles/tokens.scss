@@ -1,0 +1,55 @@
+// Smart Note 设计 token —— 全项目唯一的数值来源。
+//
+// 数值写在 Taro 的 750 设计稿空间里：设计值 ÷ 2 ≈ 375pt 屏上的 CSS px。
+// 构建时 Taro 统一把它们转成 rem（H5）或 rpx（小程序），所以这里只写裸值，
+// 别拼 calc、别依赖运行时的 root font-size。
+//
+// 规则见 docs/UI_DESIGN.md；改完 UI 过一遍 skills/ui-design/SKILL.md 的自查清单。
+
+// ---- 间距：只有这 6 级，4 / 8 / 12 / 16 / 24 / 32 pt ----
+$space-1: 8px;   // 4pt
+$space-2: 16px;  // 8pt
+$space-3: 24px;  // 12pt
+$space-4: 32px;  // 16pt
+$space-5: 48px;  // 24pt
+$space-6: 64px;  // 32pt
+$touch-min: 88px; // 44pt：所有可点元素的最小命中区域
+
+// ---- 字号 ----
+$text-brand: 52px;   // 26pt 页面大标题（"项目"/"日历"/"定期"/"设置"）
+$text-page: 40px;    // 20pt 详情标题、Sheet 标题
+$text-title: 36px;   // 18pt 一级项目标题、区块标题
+$text-item: 32px;    // 16pt 二级 / 三级节点标题
+$text-body: 30px;    // 15pt 正文、输入框
+$text-meta: 26px;    // 13pt 日期、进度、次要说明
+$text-caption: 22px; // 11pt 数量、辅助标签
+
+$weight-regular: 400;
+$weight-medium: 500;
+$weight-semibold: 600;
+$weight-bold: 700;
+
+// ---- 文字颜色 ----
+$text-primary: #1c1c1e;
+$text-secondary: #8e8e93;
+$text-tertiary: #aeaeb2;
+$text-done: #9aa0a6;   // 完成态：文字降级
+$accent-done: #479266; // 完成态：绿色 ✓
+$danger: #b45a5c;
+
+// ---- 表面 ----
+$surface-page: #ffffff;    // 页面底
+$surface-group: #fafafb;   // 展开区域：全项目唯一的层级底色
+$surface-sheet: #ffffff;   // Bottom Sheet
+$surface-raised: #ffffff;  // 输入框、浮层
+$surface-sunken: #f5f5f7;  // 内嵌块（属性编辑、选择器）
+
+// ---- 分割线 / 描边 ----
+$hairline: 1px;
+$divider: #ededf0;        // 结构分隔（列表分组、设置项）
+$divider-subtle: #f2f2f4; // 同一分组内部
+
+// ---- 圆角 ----
+$radius-sm: 12px;
+$radius-md: 20px;
+$radius-lg: 32px;
