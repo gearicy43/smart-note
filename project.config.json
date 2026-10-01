@@ -1,0 +1,8 @@
+{
+  "description": "Smart Note 微信小程序",
+  "appid": "touristappid",
+  "projectname": "smart-note",
+  "miniprogramRoot": "dist/weapp/",
+  "compileType": "miniprogram",
+  "setting": { "es6": true, "postcss": true, "minified": true }
+}
