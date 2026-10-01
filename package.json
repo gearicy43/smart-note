@@ -13,6 +13,7 @@
     "android:open": "cap open android",
     "typecheck:core": "tsc -p tsconfig.core.json",
     "preview": "vite preview --outDir dist/h5",
+    "deploy": "npm run build:h5 && npx wrangler pages deploy dist/h5 --project-name smart-note",
     "test": "vitest run",
     "test:watch": "vitest"
   },

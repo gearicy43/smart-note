@@ -24,6 +24,16 @@ npm run build
 
 开发阶段可以直接在浏览器使用 H5：运行 `npm run build:h5 && npm run preview -- --host 127.0.0.1`，打开 `http://127.0.0.1:4173/`。修改代码后重新运行 `npm run build:h5` 并刷新页面。要边改边看，可运行 `npm run dev:h5`，打开 `http://127.0.0.1:5173/`。两个端口的数据彼此独立；固定使用同一地址，浏览器才会读到之前保存的事项。数据只保存在该浏览器本机，清除站点数据会删除它。
 
+## 部署（H5）
+
+线上地址：<https://memo.gearicy43.top>（Cloudflare Pages，项目名 `smart-note`，备用域名 `smart-note-ad6.pages.dev`）。
+
+- 构建命令 `npm run build:h5`，产物目录 `dist/h5`，是纯静态站点，没有后端。
+- 手动发布：`npm run deploy`（等于构建后再 `wrangler pages deploy dist/h5`）。需要本机已登录 Cloudflare，或设置 `CLOUDFLARE_API_TOKEN`。
+- H5 是纯前端哈希路由，不需要 SPA 回退规则；`dist/h5/*.wasm` 由 Pages 按 `application/wasm` 返回。
+
+数据只存在浏览器本地（SQLite WASM + IndexedDB），所以 `127.0.0.1:5174`、`memo.gearicy43.top`、`smart-note-ad6.pages.dev` 各自是一份独立数据，换地址不会带走旧数据。需要迁移时用设置里的导出/导入备份。
+
 ## 小程序和安卓
 
 `src/core.ts` 是跨平台入口，导出事项模型、规则、服务和 `NodeRepository` 接口。`npm run typecheck:core` 使用不含 DOM 的 TypeScript 配置检查这些代码。
