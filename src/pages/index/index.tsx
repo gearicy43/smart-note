@@ -657,7 +657,7 @@ function OutlineRow({ item, tree, depth, openNode, refresh, swipeId, setSwipeId,
   // 圆圈 = 完成 / 取消完成这一整支（叶子改自己，父级批量改下面所有叶子）；标题区域只打开自己这一级的详情。
   return <View>
     <SwipeRow id={item.id} openId={swipeId} setOpenId={setSwipeId} actions={copyDeleteActions(item, copyTarget, deleteTarget)}>
-      <View className='outline-row' style={{ marginLeft: `${depth * 17}px` }}><Text className={`outline-check ${done ? 'done' : ''}`} onClick={tap(event => { event.stopPropagation(); setCompletion(item, !done, refresh); })}>{done ? '✓' : '○'}</Text><View className={`outline-main ${done ? 'done' : ''}`} onClick={tap(() => openNode(item.id))}><Text className='outline-title'>{item.title}</Text><Text className='outline-meta'>{[count ? `⑂ ${count.done}/${count.total}` : '', due ? `▦ ${shortDate(due)}` : ''].filter(Boolean).join('  ')}</Text></View>{children.length > 0 && <Text className='task-expand' onClick={tap(event => { event.stopPropagation(); setExpanded(!expanded); })}>{expanded ? '⌄' : '›'}</Text>}</View>
+      <View className='outline-row' style={{ marginLeft: `${depth * 17}px` }}><Text className={`outline-check ${done ? 'done' : ''}`} onClick={tap(event => { event.stopPropagation(); setCompletion(item, !done, refresh); })}>{done ? '✓' : '○'}</Text><View className={`outline-main ${done ? 'done' : ''}`} onClick={tap(() => openNode(item.id))}><Text className='outline-title'>{item.title}</Text><Text className='outline-meta'>{[count ? `${count.done}/${count.total}` : '', due ? shortDate(due) : ''].filter(Boolean).join(' · ')}</Text></View>{children.length > 0 && <Text className='task-expand' onClick={tap(event => { event.stopPropagation(); setExpanded(!expanded); })}>{expanded ? '⌄' : '›'}</Text>}</View>
     </SwipeRow>
     {expanded && children.map(child => <OutlineRow key={child.id} item={child} tree={tree} depth={depth + 1} openNode={openNode} refresh={refresh} swipeId={swipeId} setSwipeId={setSwipeId} copyTarget={copyTarget} deleteTarget={deleteTarget} />)}
   </View>;
@@ -691,7 +691,7 @@ function ProjectListRow({ project, nodes, summary, settings, openProject, openNo
   const tree = nodes.length ? new Tree(nodes) : null;
   const children = tree?.childrenOf(project.id) ?? [];
   const tone = deadlineTone(project.nodeTime, !!summary?.completed, localToday(), settings);
-  const meta = [project.nodeTime ? `▦ ${shortDate(project.nodeTime)}` : '', summary?.total ? `⑂ ${summary.done}/${summary.total}` : '', summary?.completed && !summary.total ? '✓' : ''].filter(Boolean).join('  ');
+  const meta = [summary?.total ? `${summary.done}/${summary.total}` : '', project.nodeTime ? shortDate(project.nodeTime) : '', summary?.completed && !summary.total ? '✓' : ''].filter(Boolean).join(' · ');
   // 项目和界面上的绿勾用同一个计算：全部后代叶子完成 = 项目完成。
   const finished = tree ? !!effectiveCompletedAt(project, tree) : !!project.completedAt;
   return <View className='project-list-group'>

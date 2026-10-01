@@ -57,7 +57,7 @@ page { background: $surface-page; color: $text-primary; }
 .project-list-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px; }
 .project-list-title { overflow: hidden; color: $text-primary; font-size: $text-title; text-overflow: ellipsis; white-space: nowrap; }
 .project-list-description { overflow: hidden; color: $text-secondary; font-size: $text-meta; text-overflow: ellipsis; white-space: nowrap; }
-.project-list-meta { color: $text-tertiary; font-size: $text-caption; }
+.project-list-meta { color: $text-secondary; font-size: $text-meta; }
 .project-list-arrow { color: #b4b6bb; font-size: 28px; line-height: 1; }
 .create-project { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid #e9eaec; border-radius: 15px; background: #fff; font-size: 19px; }.create-project input { flex: 1; min-width: 0; font-size: 22px; }.create-project text:last-child { color: #999da3; }
 .page { padding: 0; }
@@ -129,7 +129,7 @@ page { background: $surface-page; color: $text-primary; }
   .app { padding: 0 40px 240px; }
   .header { height: 100px; }.back-link { font-size: 28px; }
   .screen-heading { margin: 22px 0 32px; }.brand { font-size: 50px; }.screen-subtitle { font-size: 25px; }
-  .project-list-item { align-items: center; gap: $space-2; min-height: $touch-min; padding: $space-3 4px; }.project-list-check { font-size: $text-title; }.project-list-title { font-size: $text-title; }.project-list-description { font-size: $text-meta; }.project-list-meta { font-size: $text-caption; }.project-list-arrow { font-size: $text-title; }
+  .project-list-item { align-items: center; gap: $space-2; min-height: $touch-min; padding: $space-3 4px; }.project-list-check { font-size: $text-title; }.project-list-title { font-size: $text-title; }.project-list-description { font-size: $text-meta; }.project-list-meta { font-size: $text-meta; }.project-list-arrow { font-size: $text-title; }
   .create-project { gap: 18px; padding: 22px; border-radius: 22px; font-size: 26px; }.create-project input { font-size: 29px; }
   .page-title { height: 70px; line-height: 70px; font-size: $text-page; }.count, .description, .field-name, .date-clear, .hint { font-size: 25px; }
   .root-check { flex: none; font-size: $text-title; }
