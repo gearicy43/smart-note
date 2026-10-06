@@ -703,6 +703,8 @@ function ProjectListRow({ project, nodes, summary, settings, openProject, openNo
 }
 
 export default function Index() {
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [projects, setProjects] = useState<Node[]>([]);
   const [archived, setArchived] = useState<Node[]>([]);
   const [trashed, setTrashed] = useState<Node[]>([]);
@@ -763,7 +765,19 @@ export default function Index() {
       return [row.id, { ...progress(row, tree), completed: !!effectiveCompletedAt(row, tree), completedAt: effectiveCompletedAt(row, tree) }];
     })));
   }, []);
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh().catch(() => setLoadError(true)).finally(() => setLoading(false));
+  }, [refresh]);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const report = (event: PromiseRejectionEvent) => {
+      if (event.reason?.name !== 'NoteStorageError') return;
+      event.preventDefault();
+      void Taro.showModal({ title: '未能保存', content: event.reason.message, showCancel: false });
+    };
+    window.addEventListener('unhandledrejection', report);
+    return () => window.removeEventListener('unhandledrejection', report);
+  }, []);
   const [swipeId, setSwipeId] = useState<string | null>(null);
   const copyTarget = useCallback(async (node: Node) => {
     if (node.parentId === null) await services.project.duplicateProject(node.id, `${node.title}（副本）`, now());
@@ -837,6 +851,14 @@ export default function Index() {
         Taro.showModal({ title: '无法恢复', content: error instanceof Error ? error.message : '备份文件读取失败', showCancel: false });
       }
   }
+
+  if (loading || loadError) return <View className='app'><View className='empty start'>
+    <Text>{loadError ? '无法读取本机数据，请重试。不要清除站点数据。' : '正在读取本机数据…'}</Text>
+    {loadError && <Button onClick={() => {
+      if (typeof window !== 'undefined') window.location.reload();
+      else { setLoading(true); setLoadError(false); refresh().catch(() => setLoadError(true)).finally(() => setLoading(false)); }
+    }}>重试</Button>}
+  </View></View>;
 
   return <View className='app' onClick={() => { if (!swipeBlocked()) setSwipeId(null); }}>
     <View className='header'><Text className='back-link'>备忘录</Text></View>

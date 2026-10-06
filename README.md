@@ -61,3 +61,11 @@ npm run build
 - `src/platform/taro.ts`：小程序端本地存储适配器
 - `src/pages`、`src/app.scss`：H5 与小程序共用的 Taro 界面
 - `src/App.tsx`、`src/ui`：迁移前网页界面，暂留作对照
+
+## 本地数据可靠性（2026-10-06）
+
+H5 保存以 IndexedDB 事务完成为成功，读写失败不再伪装成空数据或保存成功。SQLite 修改在事务内执行，持久化失败恢复修改前的内存数据；同一页面的写入串行执行。保存时在同一 IndexedDB 事务检查已读取的数据库快照，其他页面已更新则拒绝旧页面覆盖，提示刷新后编辑，不自动合并。初始化失败显示重试入口，不展示可继续编辑的假空列表。旧数据库名称、存储键及事项规则保持不变。小程序仍使用现有 Taro 本地存储适配器。
+
+正式访问地址固定为 `https://memo.gearicy43.top`，由现有 Cloudflare Pages 直接提供静态页面与 WASM；不经过阿里云，也没有服务器数据库。原地址和其他浏览器的数据不会自动搬到这里：从原地址的设置中导出备份，再在本地址恢复；未确认备份前不要清除原站点数据。换浏览器后的空列表不代表原浏览器的事项已删除。
+
+回归检查：`npm test`、`npm run typecheck:core`、`npx tsc --noEmit -p tsconfig.json`、H5/微信小程序构建。真实 Chromium 存储检查位于 `scripts/test-storage.cjs`：先用本地 HTTP 服务提供 `dist/h5`，再运行 `PLAYWRIGHT_MODULE=<已安装的playwright模块路径> node scripts/test-storage.cjs http://127.0.0.1:18191/`。脚本仅允许 localhost，使用独立浏览器会话验证刷新持久化、旧标签页拒绝、事务中断和无法使用本地存储时的错误页面；不调用云端 API 或写入用户数据。

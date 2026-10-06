@@ -8,7 +8,7 @@ import { NodeRepository } from './types';
 
 export interface Persistence {
   load(): Promise<Uint8Array | undefined>;
-  save(data: Uint8Array): Promise<void>;
+  save(data: Uint8Array, expected?: Uint8Array): Promise<void>;
 }
 
 const TABLE_SQL = `CREATE TABLE IF NOT EXISTS nodes (
@@ -77,14 +77,19 @@ function getSql(): Promise<any> {
 export class SqliteRepository implements NodeRepository {
   private db!: DB;
   private ready: Promise<void>;
+  private writes: Promise<void> = Promise.resolve();
+  private persisted?: Uint8Array;
 
   constructor(private persistence: Persistence = idbPersistence()) {
     this.ready = this.init();
+    // Initialization is reported by the page when it first reads the repository.
+    void this.ready.catch(() => {});
   }
 
   private async init(): Promise<void> {
     const SQL = await getSql();
     const persisted = await this.persistence.load();
+    this.persisted = persisted;
     this.db = persisted ? new SQL.Database(persisted) : new SQL.Database();
     this.db.run(TABLE_SQL);
 
@@ -111,10 +116,37 @@ export class SqliteRepository implements NodeRepository {
 
   private async ensure(): Promise<void> {
     await this.ready;
+    await this.writes;
   }
 
   private async sync(): Promise<void> {
-    await this.persistence.save(this.db.export() as Uint8Array);
+    const data = this.db.export() as Uint8Array;
+    await this.persistence.save(data, this.persisted);
+    this.persisted = data;
+  }
+
+  private async write(change: () => void): Promise<void> {
+    await this.ready;
+    const operation = this.writes.then(async () => {
+      const before = this.db.export() as Uint8Array;
+      this.db.run('BEGIN');
+      try {
+        change();
+        this.db.run('COMMIT');
+        await this.sync();
+      } catch (error) {
+        // sql.js exports only committed data. Restore the committed snapshot
+        // on both SQL failure and persistence failure before another write.
+        this.db.close();
+        const SQL = await getSql();
+        this.db = new SQL.Database(before);
+        const failure = new Error(error instanceof Error ? error.message : '无法保存本机数据，请重试');
+        failure.name = 'NoteStorageError';
+        throw failure;
+      }
+    });
+    this.writes = operation.catch(() => {});
+    await operation;
   }
 
   private queryObjects(sql: string, params: any[]): Record<string, any>[] {
@@ -132,48 +164,39 @@ export class SqliteRepository implements NodeRepository {
   }
 
   async upsertNode(n: Node): Promise<void> {
-    await this.ensure();
-    this.db.run(UPSERT_SQL, nodeParams(n));
-    await this.sync();
+    await this.write(() => this.db.run(UPSERT_SQL, nodeParams(n)));
   }
 
   async deleteNode(id: string): Promise<void> {
-    await this.ensure();
-    const toDelete: string[] = [id];
-    let frontier: string[] = [id];
-    while (frontier.length) {
-      const ph = frontier.map(() => '?').join(',');
-      const kids = this.queryObjects(`SELECT id FROM nodes WHERE parentId IN (${ph})`, frontier).map(
-        (r) => r.id as string,
-      );
-      toDelete.push(...kids);
-      frontier = kids;
-    }
-    const ph = toDelete.map(() => '?').join(',');
-    this.db.run(`DELETE FROM nodes WHERE id IN (${ph})`, toDelete);
-    await this.sync();
+    await this.write(() => {
+      const toDelete: string[] = [id];
+      let frontier: string[] = [id];
+      while (frontier.length) {
+        const ph = frontier.map(() => '?').join(',');
+        const kids = this.queryObjects(`SELECT id FROM nodes WHERE parentId IN (${ph})`, frontier).map(
+          (r) => r.id as string,
+        );
+        toDelete.push(...kids);
+        frontier = kids;
+      }
+      const ph = toDelete.map(() => '?').join(',');
+      this.db.run(`DELETE FROM nodes WHERE id IN (${ph})`, toDelete);
+    });
   }
 
   async saveProjectTree(nodes: Node[]): Promise<void> {
-    await this.ensure();
-    const pid = nodes.find((n) => n.parentId == null)?.id;
-    if (pid) this.db.run(`DELETE FROM nodes WHERE projectId = ?`, [pid]);
-    for (const n of nodes) this.db.run(UPSERT_SQL, nodeParams(n));
-    await this.sync();
+    await this.write(() => {
+      const pid = nodes.find((n) => n.parentId == null)?.id;
+      if (pid) this.db.run(`DELETE FROM nodes WHERE projectId = ?`, [pid]);
+      for (const n of nodes) this.db.run(UPSERT_SQL, nodeParams(n));
+    });
   }
 
   async replaceAll(nodes: Node[]): Promise<void> {
-    await this.ensure();
-    this.db.run('BEGIN');
-    try {
+    await this.write(() => {
       this.db.run('DELETE FROM nodes');
-      for (const node of nodes) this.db.run(`INSERT INTO nodes (${COLS}) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, nodeParams(node));
-      this.db.run('COMMIT');
-    } catch (error) {
-      this.db.run('ROLLBACK');
-      throw error;
-    }
-    await this.sync();
+      for (const node of nodes) this.db.run(`INSERT INTO nodes (${COLS}) VALUES (${PLACEHOLDERS})`, nodeParams(node));
+    });
   }
 
   async listProjects(): Promise<Node[]> {
@@ -189,38 +212,62 @@ function nodeParams(n: Node): any[] {
   ];
 }
 
-/** Browser IndexedDB persistence (default). No-ops when indexedDB is unavailable. */
+/** Browser IndexedDB persistence. Read and write errors never mean an empty/saved database. */
 export function idbPersistence(
   dbName = 'smart-note',
   store = 'kv',
   key = 'smart-note.sqlite',
 ): Persistence {
+  const failure = (message: string) => {
+    const error = new Error(message);
+    error.name = 'NoteStorageError';
+    return error;
+  };
+  const open = (): Promise<IDBDatabase> => new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined') {
+      reject(failure('当前浏览器无法使用本地存储，请更换浏览器；不要清除原站点数据'));
+      return;
+    }
+    let blocked = false;
+    const req = indexedDB.open(dbName, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(store);
+    req.onsuccess = () => { if (blocked) req.result.close(); else resolve(req.result); };
+    req.onerror = () => reject(failure('无法打开本机数据，请重试；不要清除站点数据'));
+    req.onblocked = () => { blocked = true; reject(failure('请关闭其他备忘录页面后重试')); };
+  });
   return {
     async load(): Promise<Uint8Array | undefined> {
-      if (typeof indexedDB === 'undefined') return undefined;
-      return new Promise((resolve) => {
-        const req = indexedDB.open(dbName, 1);
-        req.onupgradeneeded = () => req.result.createObjectStore(store);
-        req.onsuccess = () => {
-          const get = req.result.transaction(store).objectStore(store).get(key);
-          get.onsuccess = () => resolve(get.result as Uint8Array | undefined);
-          get.onerror = () => resolve(undefined);
-        };
-        req.onerror = () => resolve(undefined);
+      const db = await open();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readonly');
+        const get = tx.objectStore(store).get(key);
+        let result: Uint8Array | undefined;
+        get.onsuccess = () => { result = get.result; };
+        tx.oncomplete = () => { db.close(); resolve(result); };
+        tx.onabort = () => { db.close(); reject(failure('无法读取本机数据，请重试；不要清除站点数据')); };
+        tx.onerror = () => {};
       });
     },
-    async save(data: Uint8Array): Promise<void> {
-      if (typeof indexedDB === 'undefined') return;
-      await new Promise<void>((resolve) => {
-        const req = indexedDB.open(dbName, 1);
-        req.onupgradeneeded = () => req.result.createObjectStore(store);
-        req.onsuccess = () => {
-          const st = req.result.transaction(store, 'readwrite').objectStore(store);
-          const put = st.put(data, key);
-          put.onsuccess = () => resolve();
-          put.onerror = () => resolve();
+    async save(data: Uint8Array, expected?: Uint8Array): Promise<void> {
+      const db = await open();
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        const st = tx.objectStore(store);
+        let conflict = false;
+        const get = st.get(key);
+        get.onsuccess = () => {
+          const current = get.result as Uint8Array | undefined;
+          const same = current === undefined ? expected === undefined
+            : expected !== undefined && current.length === expected.length && current.every((value, index) => value === expected[index]);
+          if (!same) { conflict = true; tx.abort(); return; }
+          st.put(data, key);
         };
-        req.onerror = () => resolve();
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onabort = () => {
+          db.close();
+          reject(failure(conflict ? '数据已在其他页面更新，请刷新后再编辑' : '无法保存本机数据，请重试或导出备份'));
+        };
+        tx.onerror = () => {};
       });
     },
   };
